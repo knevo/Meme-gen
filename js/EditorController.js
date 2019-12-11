@@ -3,12 +3,15 @@ const DEFAULT_FONT_SIZE = 60
 const DEFAULT_FILL = 'white'
 const DEFAULT_STROKE = 'black'
 let gCanvas, gCtx;
+let gMouseisDown = false
 function initEditor() {
     initMeme()
     initCanvas()
     drawMemeImg()
     renderCanvas()
     initTools()
+    handleClick()
+    handleDrag()
 }
 function initCanvas() {
     gCanvas = document.createElement('canvas')
@@ -35,6 +38,10 @@ function renderCanvas() {
     drawMemeImg()
     gCtx.save()
     let texts = getTextsToRender()
+    if (texts.length === 0) {
+        activeLineShow()
+        return
+    }
     texts.map((text) => {
         gCtx.font = `${text.size}px ${text.font}`;
         gCtx.textAlign = text.align
@@ -55,10 +62,8 @@ function renderCanvas() {
 
 function onTextChange(elInput) {
     let newText = elInput.value
-    setNewText(newText)
-    
+    setText(newText)
     renderCanvas()
-   
 }
 
 function setDefaults() {
@@ -72,31 +77,76 @@ function setDefaults() {
     gCtx.shadowOffsetY = 2;
     gCtx.shadowColor = "black";
 }
-function onLineChange(elInput){
+function onLineChange(elInput) {
     setCurrTextIdx()
     initTools()
 }
-function initTools(){
+function initTools() {
     const input = document.querySelector('.text-input')
     input.value = getCurrText().line
     activeLineShow()
 }
-function activeLineShow(){
-    let currText = getCurrText()
+function activeLineShow() {
+    canvasRect = gCanvas.getBoundingClientRect();
+    canvasLeft = canvasRect.left;
+    canvasTop = canvasRect.top;
     const lineFocus = document.querySelector('.focus-line')
-    lineFocus.style.top = currText.posY-currText.height -10 +'px' 
-    lineFocus.style.left = currText.posX -10 + 'px'
-    lineFocus.style.height= currText.height + 25 +'px'
-    lineFocus.style.width= currText.width + 30 +'px'
+
+    let currText = getCurrText()
+    if (!currText) {
+        lineFocus.classList.add('hidden')
+        return
+    } else lineFocus.classList.remove('hidden')
+    lineFocus.style.top = currText.posY - currText.height -10 + canvasTop + 'px'
+    lineFocus.style.left = currText.posX + canvasLeft - 10 + 'px'
+    lineFocus.style.height = currText.height + 25 + 'px'
+    lineFocus.style.width = currText.width + 30 + 'px'
 }
-function onChangeFontSize(elSize){
+function onChangeFontSize(elSize) {
     let dif = +elSize.dataset.val
     setFontSize(dif)
     renderCanvas()
 }
-function onChangeYPos(elPos){
+function onChangeYPos(elPos) {
     let dif = +elPos.dataset.val
     setTextYPos(dif)
     renderCanvas()
 }
+function onLineDelete() {
+    deleteCurrLine()
+    renderCanvas()
+}
+function onLineAdd() {
+    addNewLine()
+    renderCanvas()
+    initTools()
+}
+function handleClick() {
+    gCanvas.onclick = (event) => {
+        if (isInTextArea(event)) {
+            initTools()
+        }
+    }
+}
+function handleDrag() {
+    gCanvas.onmousedown = (ev) => {
+        if (isInTextArea(ev)) {
+            gMouseisDown = true
+            gCanvas.onmousemove = event => {
+                if (gMouseisDown) {
+                    changePos(event)
+                    renderCanvas()
+                }
+            }
+        }
+    }
+    gCanvas.onmouseup = ev => {
+        if (gMouseisDown) {
+            gMouseisDown = false
+            changePos(ev)
+            renderCanvas()
+        }
+    }
+}
+
 

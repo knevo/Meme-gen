@@ -1,47 +1,74 @@
-.editor-container{
+.editor-container {
+    max-width: 980px;
     display: flex;
     justify-content: space-between;
     visibility: hidden;
-    height: 100vh;
-}
-.editor-container>*{
-    max-width: 50%;
-    height: 500px;
+    margin: 0 auto;
 }
 
-.tools-container > input{
-    padding: 20px;
+.editor-container>* {
+    min-width: 50%;
+}
+
+.tools-container {
+    background-color: #383b42;
+    text-align: center;
+}
+
+.tools-container>* {
+    margin-block-end: 30px;
+}
+
+.text-input {
     background-color: #f0f0f0;
-    border-radius: 2px;
-    height: 50px;
-    width: 250px;
+    height: 100%;
+    width: 100%;
+    box-shadow: 1px 5px 0 #bbc4d1, inset 0 5px 0 #ffffff;
+    border-radius: 30px;
+    text-align: center;
+    font-size: 2rem;
 }
 
-.icon{
+.input-container {
+    padding: 20px 40px 0;
+    height: 100px;
+    width: 100%;
+}
+
+.icon {
     width: 50px;
     height: 50px;
     background-color: rgb(192, 190, 190);
     padding: 0.5rem 0.5rem;
     cursor: pointer;
     border: 1px groove darkgray;
+    box-shadow: 1px 3px 0 #04929cd8, inset 0 5px 0 rgba(255, 255, 255, 0.58);
 }
-.icon:hover{
+
+.icon:hover {
     background-color: rgb(160, 158, 158);
 }
-.tool-bar{
+
+.edit-container>* {
+    margin-inline-start: 20px;
+}
+
+.tool-bar {
     width: 100%;
 }
-.focus-line{
+
+.focus-line {
     position: absolute;
     background-color: transparent;
     border: 2px solid aqua;
+    pointer-events: none;
 }
-.fa-long-arrow-alt-up{
-    height: 50px;
-    width: 50px;
-    color: black;
-}
-svg{
-    height: 100%;
-    width: 100%;
+
+@media (max-width: 980px) {
+    .editor-container {
+        flex-direction: column;
+    }
+    .editor-container>* {
+        max-width: 100%;
+    }
 }

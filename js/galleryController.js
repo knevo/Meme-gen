@@ -17,7 +17,7 @@ function onImgSelect(elImg) {
     showEditor()
 }
 function hideGallery() {
-    const elGallery = document.querySelector('.gallery-container')
+    const elGallery = document.querySelector('.main')
     elGallery.classList.add('hidden')
 }
 function showEditor() {

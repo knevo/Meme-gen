@@ -13,23 +13,48 @@
 </head>
 
 <body onload="initGallery()">
-    <section class="gallery-container">
+    <nav class="main-nav flex space-between align-center">
+        <div class="main-logo">Meme Generator.</div>
+        <div class="main-menu">
+            <a href=".">Gallery</a>
+            <a href="#">About</a>
+        </div>
+    </nav>
+
+
+    <section class="main">
+        <div class="search flex align-center">
+            <input type="text" placeholder="Search">
+            <div class="words-container">
+            </div>
+            <button>More</button>
+        </div>
+
+        <div class="gallery-container"></div>
+
     </section>
 
     <section class='editor-container flex'>
         <div class="canvas-container">
         </div>
-        <div class="tools-container flex center align-center wrap">
-            <span class="icon" onclick="onLineChange(this)"><img src="./img/icons/change-line.png" alt=""></span>
-            <input class="text-input" type="input" placeholder="Enter Text" oninput="onTextChange(this)" />
+        <div class="tools-container">
+            <div class="input-container">
+                <input class="text-input" type="input" placeholder="Enter Text" oninput="onTextChange(this)" />
+            </div>
+            <div class="edit-container">
+                <span class="icon" onclick="onLineChange(this)"><img src="./img/icons/change-line.png" alt=""></span>
+                <span class="icon" onclick="onLineAdd(this)"><img src="./img/icons/add.png" alt=""></span>
+                <span class="icon" onclick="onLineDelete(this)"><img src="./img/icons/trash.png" alt=""></span>
+            </div>
+
             <div class="tool-bar flex center">
                 <span class="icon" data-val="+2" onclick="onChangeFontSize(this)"><img
                         src="./img/icons/increase-font.png" /></span>
                 <span class="icon" data-val="-2" onclick="onChangeFontSize(this)"><img
                         src="./img/icons/decrease-font.png" /></span>
-                <span class="icon" data-val="-2" onclick="onChangeYPos(this)">
+                <span class="icon" data-val="-5" onclick="onChangeYPos(this)">
                     <img src="./img/icons/arrow-up.png" alt=""></span>
-                <span class="icon" data-val="+2" onclick="onChangeYPos(this)">
+                <span class="icon" data-val="+5" onclick="onChangeYPos(this)">
                     <img src="./img/icons/arrow-up.png" alt="" style="transform: rotate(180deg);"></span>
             </div>
 
