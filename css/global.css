@@ -1,0 +1,63 @@
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-family: serif;
+    color: #626262;
+    line-height: 1.5;
+}
+
+body {
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+img {
+    width: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    font-weight: normal;
+}
+
+h2 {
+    font-size: 1.875rem;
+    margin-bottom: 2.375rem;
+}
+
+p {
+    margin: 0 0 1.625rem;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+
+/* HELPERS */
+.hidden{
+    visibility: hidden;
+    display: none;
+}
+.visible{
+    visibility: visible;
+}
+.flex{
+    display: flex;
+}
+.flex.center{
+    justify-content: center;
+}
+.flex.align-center{
+    align-items: center;
+}
+.flex.column{
+    flex-direction: column;
+}
+.flex.wrap{
+    flex-wrap: wrap;
+}

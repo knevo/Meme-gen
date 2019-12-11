@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="css/gallery.css">
+    <link rel="stylesheet" href="css/editor.css">
+    <link rel="stylesheet" href="css/global.css">
+    <script src="./vendor/fa/all.js" rel="stylesheet"></script>
+    <title>Document</title>
+</head>
+
+<body onload="initGallery()">
+    <section class="gallery-container">
+    </section>
+
+    <section class='editor-container flex'>
+        <div class="canvas-container">
+        </div>
+        <div class="tools-container flex center align-center wrap">
+            <span class="icon" onclick="onLineChange(this)"><img src="./img/icons/change-line.png" alt=""></span>
+            <input class="text-input" type="input" placeholder="Enter Text" oninput="onTextChange(this)" />
+            <div class="tool-bar flex center">
+                <span class="icon" data-val="+2" onclick="onChangeFontSize(this)"><img
+                        src="./img/icons/increase-font.png" /></span>
+                <span class="icon" data-val="-2" onclick="onChangeFontSize(this)"><img
+                        src="./img/icons/decrease-font.png" /></span>
+                <span class="icon" data-val="-2" onclick="onChangeYPos(this)">
+                    <img src="./img/icons/arrow-up.png" alt=""></span>
+                <span class="icon" data-val="+2" onclick="onChangeYPos(this)">
+                    <img src="./img/icons/arrow-up.png" alt="" style="transform: rotate(180deg);"></span>
+            </div>
+
+        </div>
+    </section>
+    <div class="focus-line">
+    </div>
+    <script src="js/utis.js"></script>
+    <script src="js/galleryService.js"></script>
+    <script src="js/galleryController.js"></script>
+    <script src="js/EditorService.js"></script>
+    <script src="js/EditorController.js"></script>
+</body>
+
+</html>

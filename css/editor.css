@@ -1,0 +1,47 @@
+.editor-container{
+    display: flex;
+    justify-content: space-between;
+    visibility: hidden;
+    height: 100vh;
+}
+.editor-container>*{
+    max-width: 50%;
+    height: 500px;
+}
+
+.tools-container > input{
+    padding: 20px;
+    background-color: #f0f0f0;
+    border-radius: 2px;
+    height: 50px;
+    width: 250px;
+}
+
+.icon{
+    width: 50px;
+    height: 50px;
+    background-color: rgb(192, 190, 190);
+    padding: 0.5rem 0.5rem;
+    cursor: pointer;
+    border: 1px groove darkgray;
+}
+.icon:hover{
+    background-color: rgb(160, 158, 158);
+}
+.tool-bar{
+    width: 100%;
+}
+.focus-line{
+    position: absolute;
+    background-color: transparent;
+    border: 2px solid aqua;
+}
+.fa-long-arrow-alt-up{
+    height: 50px;
+    width: 50px;
+    color: black;
+}
+svg{
+    height: 100%;
+    width: 100%;
+}
