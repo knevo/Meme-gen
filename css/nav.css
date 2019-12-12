@@ -1,0 +1,99 @@
+/* NAV */
+
+.main-nav {
+    height: 70px;
+    background-color: #d1d1d1;
+    padding: 0 100px;
+    border-radius: 1.5rem;
+    margin-block-end: 20px;
+    background-image: linear-gradient(-86deg, #33be6d 0%, #0c98b9 100%);
+}
+
+.menu-btn{
+    background-color: transparent;
+    width: 3rem;
+    display: none;
+}
+.main-logo {
+    font-size: 1.5rem;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    padding-right: 40px;
+    border-right: 1px solid #a5acaf;
+    letter-spacing: 0.03rem;
+    text-transform: uppercase;
+    color: white;
+    text-shadow: -1px 2px 6px black;
+}
+
+.main-menu>* {
+    margin-left: 40px;
+    box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.15);
+    border-radius: 20px;
+    background-color: #fefefe;
+    height: 50px;
+    padding: 6px 10px;
+}
+/* FOOTER */
+footer{
+    width: 100%;
+    text-align: center;
+}
+footer h2{
+    font-size: 1.5rem;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    letter-spacing: 0.03rem;
+    text-transform: uppercase;
+    color: white;
+    text-shadow: -1px 2px 6px black;
+}
+footer > :first-child{
+    margin-block-start: 20px;
+}
+
+@media (max-width: 850px){
+    .main-menu>* {
+        margin-left: 20px;
+    }
+}
+/* HAMBURGER */
+@media (max-width: 720px){
+    .menu-btn{
+        display: inline-block;
+    }
+    .main-menu {
+        display: flex;
+        flex-direction: row;
+        position: fixed;
+        right: 80px;
+        top: 90px;
+        /* border-left: 1px solid #c3c3c3; */
+        width: 270px;
+        transform: translate(150%, 0);
+        transition: transform .6s;
+    }
+    
+    .menu-open .main-menu {
+        transform: translate(0, 0);
+        z-index: 1000;
+    }
+
+    .main-menu > * {
+        height: 40px;
+        width: 100%;
+        border-bottom: 1px solid #ececec;
+        text-align: center;
+    }
+    .main-menu>* {
+        margin-left: 0;
+    }
+    .main-menu a {
+        display: block;
+        padding: 7px 0;
+    }
+    .main-menu a:hover {
+        box-shadow: 1px 3px 0 #04929cd8, inset 0 5px 0 rgba(255, 255, 255, 0.58);
+    }
+    .main-nav{
+        padding: 0 20px;
+    }
+}

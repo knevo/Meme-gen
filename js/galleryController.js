@@ -14,8 +14,7 @@ function renderGallery() {
 }
 function onImgSelect(elImg) {
     hideGallery()
-    let imgId = elImg.dataset.id
-    setCurrImgId(imgId)
+    setCurrImgId(elImg.dataset.id)
     showEditor()
 }
 function hideGallery() {
@@ -49,10 +48,14 @@ function renderMemes() {
 }
 function toggleMenu() {
     document.body.classList.toggle('menu-open');
+    window.onscroll = function() {
+        document.body.classList.remove('menu-open');
+    }
 }
 
 function onImgInput(ev) {
     loadImageFromInput(ev)
 }
+
 
 

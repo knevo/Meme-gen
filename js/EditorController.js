@@ -30,7 +30,7 @@ function onSetFill() {
     setTextFill(fillColor)
 }
 function resizeCanvas() {
-    if(document.body.width < 500) maxWidth=350
+    maxWidth = (document.body.clientWidth<500)? document.body.clientWidth-20:maxWidth
     let newRatio = calcAspectRatio(gMeme.img.width, gMeme.img.height, maxWidth, 500);
     gMeme.img.width = newRatio.width
     gMeme.img.height = newRatio.height
