@@ -95,10 +95,6 @@
     margin-block-start: 30px;
 }
 
-/* svg {
-    height: 1rem;
-} */
-
 #palette {
     display: none;
 }
@@ -110,10 +106,7 @@
     .editor-container>* {
         width: 100%;
     }
-}
-
-@media (max-width: 720px) {
-    footer{
+    footer {
         display: none;
     }
 }

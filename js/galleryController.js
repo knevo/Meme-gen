@@ -40,15 +40,20 @@ function hideEditor() {
 }
 function renderMemes() {
     let imgs = getMemesUrls()
-    const htmls = imgs.map(img => {
-        return `<img src="${img}">`
-    })
     const elMeme = document.querySelector('.meme-page')
-    elMeme.innerHTML = htmls.join('')
+    if (imgs[0]!==''){
+        const htmls = imgs.map(img => {
+            return `<img src="${img}">`
+        })
+        elMeme.innerHTML = htmls.join('')
+    }else{
+        elMeme.innerHTML = `<div class="empty-container">Make some MEMES!!!</div>`
+    }
+    
 }
 function toggleMenu() {
     document.body.classList.toggle('menu-open');
-    window.onscroll = function() {
+    window.onscroll = function () {
         document.body.classList.remove('menu-open');
     }
 }

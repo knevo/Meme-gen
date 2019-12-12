@@ -21,7 +21,7 @@
         <div class="main-menu">
             <a href=".">Gallery</a>
             <a href="#" onclick="showMemes()">Memes</a>
-            <a href="#">About</a>
+            <a href=#footer>About</a>
         </div>
     </nav>
 
@@ -30,10 +30,10 @@
         <div class="search flex center space-between align-center">
             <input type="text" placeholder="Search" oninput="renderGallery()" /> <i
                 class="fas fa-search fa-lg search-icon"></i>
-                <label for="image" class="btn">Upload IMG</label>
-                <input id="image" class="file-input" type="file" name="image" onchange="onImgInput(event)" />
+            <label for="image" class="btn">Upload IMG</label>
+            <input id="image" class="file-input" type="file" name="image" onchange="onImgInput(event)" />
         </div>
-       
+
 
         <div class="gallery-container"></div>
 
@@ -85,10 +85,10 @@
     <section class="meme-page hidden"></section>
     <div class="focus-line">
     </div>
-    <footer>
+    <footer id='footer'>
         <div class="footer-container">
             <h2>Meme Generator</h2>
-            <small>All rights reserved Nevo	&#9400;</small>
+            <small>All rights reserved Nevo &#9400;</small>
         </div>
     </footer>
     <script src="js/utis.js"></script>

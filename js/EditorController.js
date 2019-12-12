@@ -30,7 +30,7 @@ function onSetFill() {
     setTextFill(fillColor)
 }
 function resizeCanvas() {
-    maxWidth = (document.body.clientWidth<500)? document.body.clientWidth-20:maxWidth
+    maxWidth = (document.body.clientWidth < 500) ? document.body.clientWidth - 20 : maxWidth
     let newRatio = calcAspectRatio(gMeme.img.width, gMeme.img.height, maxWidth, 500);
     gMeme.img.width = newRatio.width
     gMeme.img.height = newRatio.height
@@ -136,7 +136,7 @@ function handleDrag() {
     canvasRect = gCanvas.getBoundingClientRect();
     canvasLeft = canvasRect.left;
     canvasTop = canvasRect.top;
-    console.log(canvasTop,canvasLeft)
+    console.log(canvasTop, canvasLeft)
     gCanvas.onmousedown = (ev) => {
         if (isInTextArea(ev)) {
             gMouseisDown = true

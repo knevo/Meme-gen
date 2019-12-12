@@ -32,11 +32,11 @@ function initMeme() {
 }
 function initMemeImg() {
     let img = new Image()
-    img.onload = ()=>{
-        gMeme.txts[0].posX = gMeme.img.width*0.1
-        gMeme.txts[0].posY = gMeme.img.height*0.2
-        gMeme.txts[1].posX = gMeme.img.width*0.1
-        gMeme.txts[1].posY = gMeme.img.height*0.8
+    img.onload = () => {
+        gMeme.txts[0].posX = gMeme.img.width * 0.1
+        gMeme.txts[0].posY = gMeme.img.height * 0.2
+        gMeme.txts[1].posX = gMeme.img.width * 0.1
+        gMeme.txts[1].posY = gMeme.img.height * 0.8
         renderCanvas()
     }
     img.src = getImgUrlById(getCurrImgId())
@@ -56,13 +56,13 @@ function createLine() {
         align: 'left',
         fill: DEFAULT_FILL,
         stroke: DEFAULT_STROKE,
-        posX: gMeme.img.width/2-50,
-        posY: gMeme.img.height/2-50,
+        posX: gMeme.img.width / 2 - 50,
+        posY: gMeme.img.height / 2 - 50,
         height: 0,
         width: 0
     }
 }
-function setTextFill(strokeColor){
+function setTextFill(strokeColor) {
     gMeme.txts[gMeme.selectedTxtIdx].fill = strokeColor
 }
 function setText(text) {
@@ -103,7 +103,7 @@ function isInTextArea(ev) {
     } else return false
 }
 
-function setTextMeasure(height,width,textIdx){
+function setTextMeasure(height, width, textIdx) {
     gMeme.txts[textIdx].height = height
     gMeme.txts[textIdx].width = width
 }
@@ -111,11 +111,11 @@ function setTextMeasure(height,width,textIdx){
 function dragText(ev) {
     let text = gMeme.txts[gMeme.selectedTxtIdx]
     text.posX = ev.offsetX - text.width / 2
-    text.posY = ev.offsetY + text.height /2
+    text.posY = ev.offsetY + text.height / 2
 }
 
-function saveMeme(){
-    saveToStorage(`meme${gStorageMemeIdx}`,gCanvas.toDataURL('image/jpeg'))
+function saveMeme() {
+    saveToStorage(`meme${gStorageMemeIdx}`, gCanvas.toDataURL('image/jpeg'))
     gStorageMemeIdx++
-    saveToStorage('memeIdx',gStorageMemeIdx)
+    saveToStorage('memeIdx', gStorageMemeIdx)
 }
