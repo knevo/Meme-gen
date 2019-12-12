@@ -49,7 +49,7 @@ function renderCanvas() {
         activeLineShow()
         return
     }
-    texts.map((text,i) => {
+    texts.map((text, i) => {
         gCtx.font = `${text.size}px ${text.font}`;
         gCtx.textAlign = text.align
         gCtx.fillStyle = text.fill
@@ -58,15 +58,15 @@ function renderCanvas() {
         gCtx.fillText(text.line, text.posX, text.posY);
 
         let measure = gCtx.measureText(text.line)
-        setTextMeasure(measure.actualBoundingBoxAscent,measure.width,i)
-        handleOutOfBound(text,measure)
-        
+        setTextMeasure(measure.actualBoundingBoxAscent, measure.width, i)
+        handleOutOfBound(text, measure)
+
     })
     activeLineShow()
     gCtx.restore()
 }
-function handleOutOfBound(text,measure){
-    if (text.posX+measure.width>gCanvas.width && !gMouseisDown) setFontSize(-5)
+function handleOutOfBound(text, measure) {
+    if (text.posX + measure.width > gCanvas.width && !gMouseisDown) setFontSize(-5)
 }
 
 function onTextChange(elInput) {
@@ -132,6 +132,10 @@ function handleClick() {
     }
 }
 function handleDrag() {
+    canvasRect = gCanvas.getBoundingClientRect();
+    canvasLeft = canvasRect.left;
+    canvasTop = canvasRect.top;
+    console.log(canvasTop,canvasLeft)
     gCanvas.onmousedown = (ev) => {
         if (isInTextArea(ev)) {
             gMouseisDown = true
@@ -150,12 +154,20 @@ function handleDrag() {
             renderCanvas()
         }
     }
+    gCanvas.addEventListener("touchstart", (ev) => {
+        gCanvas.addEventListener("touchmove", event => {
+            event.offsetX = event.touches[0].clientX - canvasLeft
+            event.offsetY = event.touches[0].clientY - canvasTop
+            dragText(event)
+            renderCanvas()
+        });
+    });
 }
 function downloadImg(elLink) {
     var imgContent = gCanvas.toDataURL('image/jpeg');
     elLink.href = imgContent
 }
-function onSave(){
+function onSave() {
     document.querySelector('.save').innerText = 'Saved!'
     document.querySelector('.save').onclick = '#'
     saveMeme();
