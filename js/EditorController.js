@@ -136,7 +136,6 @@ function handleDrag() {
     canvasRect = gCanvas.getBoundingClientRect();
     canvasLeft = canvasRect.left;
     canvasTop = canvasRect.top;
-    console.log(canvasTop, canvasLeft)
     gCanvas.onmousedown = (ev) => {
         if (isInTextArea(ev)) {
             gMouseisDown = true
