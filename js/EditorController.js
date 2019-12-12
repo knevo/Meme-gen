@@ -2,7 +2,7 @@ const DEFAULT_FONT = "Impact"
 const DEFAULT_FONT_SIZE = 60
 const DEFAULT_FILL = 'white'
 const DEFAULT_STROKE = 'black'
-const MAX_WIDTH = 500
+let maxWidth = 500
 let gCanvas, gCtx;
 let gMouseisDown = false
 function initEditor() {
@@ -30,7 +30,8 @@ function onSetFill() {
     setTextFill(fillColor)
 }
 function resizeCanvas() {
-    let newRatio = calcAspectRatio(gMeme.img.width, gMeme.img.height, 500, 500);
+    if(document.body.width < 500) maxWidth=350
+    let newRatio = calcAspectRatio(gMeme.img.width, gMeme.img.height, maxWidth, 500);
     gMeme.img.width = newRatio.width
     gMeme.img.height = newRatio.height
     gCanvas.width = gMeme.img.width
