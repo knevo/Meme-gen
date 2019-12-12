@@ -10,3 +10,9 @@ function getRandomId() {
 function getRandomNumber(max) {
     return Math.floor(Math.random() * max);
 }
+function calcAspectRatio(srcWidth, srcHeight, maxWidth, maxHeight) {
+    var ratio = [maxWidth / srcWidth, maxHeight / srcHeight];
+    ratio = Math.min(ratio[0], ratio[1]);
+
+    return { width: srcWidth * ratio, height: srcHeight * ratio };
+}

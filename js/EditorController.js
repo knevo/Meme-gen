@@ -2,6 +2,7 @@ const DEFAULT_FONT = "Impact"
 const DEFAULT_FONT_SIZE = 60
 const DEFAULT_FILL = 'white'
 const DEFAULT_STROKE = 'black'
+const MAX_WIDTH = 500
 let gCanvas, gCtx;
 let gMouseisDown = false
 function initEditor() {
@@ -12,6 +13,7 @@ function initEditor() {
     initTools()
     handleClick()
     handleDrag()
+    renderCanvas()
 }
 function initCanvas() {
     gCanvas = document.createElement('canvas')
@@ -22,10 +24,15 @@ function initCanvas() {
 function setFill(fillColor) {
     gCtx.fillStyle = fillColor
 }
-function setStroke(strokeColor) {
-    gCtx.strokeStyle = strokeColor
+function onSetFill() {
+    let fillColor = document.getElementById('palette').value
+    document.querySelector('.icon.palette').style.fill = fillColor
+    setTextFill(fillColor)
 }
 function resizeCanvas() {
+    let newRatio = calcAspectRatio(gMeme.img.width, gMeme.img.height, 500, 500);
+    gMeme.img.width = newRatio.width
+    gMeme.img.height = newRatio.height
     gCanvas.width = gMeme.img.width
     gCanvas.height = gMeme.img.height
     setDefaults()
@@ -42,7 +49,7 @@ function renderCanvas() {
         activeLineShow()
         return
     }
-    texts.map((text) => {
+    texts.map((text,i) => {
         gCtx.font = `${text.size}px ${text.font}`;
         gCtx.textAlign = text.align
         gCtx.fillStyle = text.fill
@@ -51,13 +58,15 @@ function renderCanvas() {
         gCtx.fillText(text.line, text.posX, text.posY);
 
         let measure = gCtx.measureText(text.line)
-        text.height = measure.actualBoundingBoxAscent
-        text.width = measure.width
-        // setTextWidth(measure.width)
+        setTextMeasure(measure.actualBoundingBoxAscent,measure.width,i)
+        handleOutOfBound(text,measure)
+        
     })
     activeLineShow()
-
     gCtx.restore()
+}
+function handleOutOfBound(text,measure){
+    if (text.posX+measure.width>gCanvas.width && !gMouseisDown) setFontSize(-5)
 }
 
 function onTextChange(elInput) {
@@ -77,10 +86,7 @@ function setDefaults() {
     gCtx.shadowOffsetY = 2;
     gCtx.shadowColor = "black";
 }
-function onLineChange(elInput) {
-    setCurrTextIdx()
-    initTools()
-}
+
 function initTools() {
     const input = document.querySelector('.text-input')
     input.value = getCurrText().line
@@ -97,7 +103,7 @@ function activeLineShow() {
         lineFocus.classList.add('hidden')
         return
     } else lineFocus.classList.remove('hidden')
-    lineFocus.style.top = currText.posY - currText.height -10 + canvasTop + 'px'
+    lineFocus.style.top = currText.posY - currText.height - 10 + canvasTop + 'px'
     lineFocus.style.left = currText.posX + canvasLeft - 10 + 'px'
     lineFocus.style.height = currText.height + 25 + 'px'
     lineFocus.style.width = currText.width + 30 + 'px'
@@ -107,14 +113,11 @@ function onChangeFontSize(elSize) {
     setFontSize(dif)
     renderCanvas()
 }
-function onChangeYPos(elPos) {
-    let dif = +elPos.dataset.val
-    setTextYPos(dif)
-    renderCanvas()
-}
+
 function onLineDelete() {
     deleteCurrLine()
     renderCanvas()
+    initTools()
 }
 function onLineAdd() {
     addNewLine()
@@ -134,7 +137,7 @@ function handleDrag() {
             gMouseisDown = true
             gCanvas.onmousemove = event => {
                 if (gMouseisDown) {
-                    changePos(event)
+                    dragText(event)
                     renderCanvas()
                 }
             }
@@ -143,10 +146,17 @@ function handleDrag() {
     gCanvas.onmouseup = ev => {
         if (gMouseisDown) {
             gMouseisDown = false
-            changePos(ev)
+            dragText(ev)
             renderCanvas()
         }
     }
 }
-
-
+function downloadImg(elLink) {
+    var imgContent = gCanvas.toDataURL('image/jpeg');
+    elLink.href = imgContent
+}
+function onSave(){
+    document.querySelector('.save').innerText = 'Saved!'
+    document.querySelector('.save').onclick = '#'
+    saveMeme();
+}

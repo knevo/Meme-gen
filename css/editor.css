@@ -2,12 +2,10 @@
     max-width: 980px;
     display: flex;
     justify-content: space-between;
-    visibility: hidden;
     margin: 0 auto;
 }
-
-.editor-container>* {
-    min-width: 50%;
+.editor-container.hidden ~ .focus-line{
+    display: none;
 }
 
 .tools-container {
@@ -59,9 +57,49 @@
 
 .focus-line {
     position: absolute;
-    background-color: transparent;
-    border: 2px solid aqua;
+    background-color: rgba(36, 35, 35, 0.34);
     pointer-events: none;
+}
+
+.output>*:not(:first-child) {
+    margin-inline-start: 15px;
+}
+
+.btn {
+    box-shadow: 1px 6px 0 #632687, inset 0 2px 0 #ffffff;
+    border-radius: 15px;
+    background-color: #8f44bb;
+    color: white;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+}
+
+.btn.blue {
+    background-color: #1e7cd3;
+    box-shadow: 1px 6px 0 #165c9c, inset 0 2px 0 #ffffff;
+}
+
+.btn:active {
+    box-shadow: 1px 3px 0 #04929cd8, inset 0 5px 0 rgba(255, 255, 255, 0.58);
+    transform: translateY(2px);
+}
+
+.share-container {
+    margin-inline-start: 20px;
+    display: inline-block;
+}
+
+.tools-container form {
+    margin-block-start: 30px;
+}
+
+svg {
+    height: 1rem;
+}
+
+#palette {
+    display: none;
 }
 
 @media (max-width: 980px) {
@@ -69,6 +107,6 @@
         flex-direction: column;
     }
     .editor-container>* {
-        max-width: 100%;
+        width: 100%;
     }
 }
