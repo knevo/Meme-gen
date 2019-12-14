@@ -12,6 +12,7 @@ button {
     border: none;
     font-family: inherit;
     font-size: inherit;
+    cursor: pointer;
 }
 
 input {
@@ -22,7 +23,6 @@ body {
     font-size: 1rem;
     margin: 0;
     background-color: #22252c;
-    padding: 20px;
 }
 
 img {

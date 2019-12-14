@@ -11,27 +11,31 @@
 
 .tools-container {
     background-color: #383b42;
-    text-align: center;
-}
-
-.tools-container>* {
-    margin-block-end: 30px;
+    display: grid;
+    grid-template-columns: 10px 1fr 50px 1fr 10px;
+    grid-template-rows: 100px 60px 1fr 100px;
+    grid-template-areas: 
+    ". in in in ." 
+    ". tool . edit ." 
+    ". stick stick stick ."
+    ". out . share .";
+    align-items: center;
 }
 
 .text-input {
     background-color: #f0f0f0;
-    height: 100%;
-    width: 100%;
     box-shadow: 1px 5px 0 #bbc4d1, inset 0 5px 0 #ffffff;
     border-radius: 30px;
     text-align: center;
     font-size: 2rem;
+    outline: none;
+    width: 100%;
+    height: 100%;
 }
 
 .input-container {
-    padding: 20px 40px 0;
-    height: 100px;
-    width: 100%;
+    height: 50%;
+    grid-area: in;
 }
 
 .icon {
@@ -48,12 +52,18 @@
     background-color: rgb(160, 158, 158);
 }
 
-.edit-container>* {
-    margin-inline-start: 20px;
+.edit-container {
+    display: flex;
+    justify-content: space-around;
+    grid-area: edit;
+    align-self: flex-start;
 }
 
 .tool-bar {
     width: 100%;
+    grid-area: tool;
+    align-self: flex-start;
+    justify-self: center;
 }
 
 .focus-line {
@@ -91,20 +101,182 @@
     display: inline-block;
 }
 
-.tools-container form {
-    margin-block-start: 30px;
+form {
+    grid-area: share;
+    display: inline-block;
+    justify-self: center;
 }
 
 #palette {
     display: none;
 }
 
+.mobile-out {
+    display: none;
+}
+.stickers{
+    border-radius: 2rem;
+    border: 2px solid black;
+    grid-area: stick;
+
+    height: 100px;
+}
+.sticker-container >*{
+    width: 100px;
+    overflow: hidden;
+}
+
+/* DROPDOWN */
+
+.select-wrapper {
+    position: relative;
+    user-select: none;
+    width: 200px;
+    grid-area: out;
+}
+
+.select {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-width: 0 2px 0 2px;
+    border-style: solid;
+    border-color: #394a6d;
+}
+
+.select-trigger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 22px;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: white;
+    height: 60px;
+    line-height: 60px;
+    background-color: #383b42;
+    cursor: pointer;
+    border-width: 2px 0 2px 0;
+    border-style: solid;
+    border-color: #394a6d;
+}
+
+.options {
+    position: absolute;
+    display: block;
+    top: 100%;
+    left: 0;
+    right: 0;
+    border: 2px solid #394a6d;
+    border-top: 0;
+    background-color: #383b42;
+    transition: all 0.5s;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.select.open .options {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+}
+
+.option {
+    position: relative;
+    display: block;
+    padding: 0 22px 0 22px;
+    font-size: 22px;
+    font-weight: 300;
+    color: white;
+    line-height: 60px;
+    cursor: pointer;
+    transition: all 0.5s;
+}
+
+.option:hover {
+    cursor: pointer;
+    background-image: linear-gradient(-86deg, #33be6d 0%, #0c98b9 100%);
+
+}
+
+.arrow {
+    position: relative;
+    height: 15px;
+    width: 15px;
+}
+
+.arrow::before, .arrow::after {
+    content: "";
+    position: absolute;
+    bottom: 0px;
+    width: 0.15rem;
+    height: 100%;
+    transition: all 250ms;
+}
+
+.arrow::before {
+    left: -5px;
+    transform: rotate(45deg);
+    background-color: #394a6d;
+}
+
+.arrow::after {
+    left: 5px;
+    transform: rotate(-45deg);
+    background-color: #394a6d;
+}
+
+.open .arrow::before {
+    left: -5px;
+    transform: rotate(-45deg);
+}
+
+.open .arrow::after {
+    left: 5px;
+    transform: rotate(45deg);
+}
+
 @media (max-width: 980px) {
+    .tools-container {
+        display: grid;
+        grid-template-columns: 10px 1fr 1fr 1fr 1fr 10px;
+        grid-template-rows: 100px 60px 1fr 100px;
+        grid-template-areas: 
+        ". in in edit edit ." 
+        ". . tool tool . ." 
+        ". stick stick stick stick ."
+        ". out out out share share";
+        align-items: center;
+    }
     .editor-container {
         flex-direction: column;
     }
     .editor-container>* {
         width: 100%;
+    }
+    .edit-container{
+        align-self: center;
+    }
+    .input-container {
+        display: inline-block;
+        padding: 0;
+        height: auto;
+    }
+    .text-input {
+        height: 50%;
+        text-align: center;
+        font-size: 1.5rem;
+        padding: 10px 5px;
+    }
+    .mobile-out {
+        display: inline-block;
+        grid-area: out;
+    }
+    .select-wrapper {
+        display: none;
     }
     footer {
         display: none;

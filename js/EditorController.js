@@ -2,9 +2,11 @@ const DEFAULT_FONT = "Impact"
 const DEFAULT_FONT_SIZE = 60
 const DEFAULT_FILL = 'white'
 const DEFAULT_STROKE = 'black'
+const MAX_STICKER_WIDTH = 150
+const MAX_STICKER_HEIGHT = 200
 let maxWidth = 500
 let gCanvas, gCtx;
-let gMouseisDown = false
+let gMouseisDown = false;
 function initEditor() {
     initMeme()
     initCanvas()
@@ -12,7 +14,7 @@ function initEditor() {
     renderCanvas()
     initTools()
     handleClick()
-    handleDrag()
+    handleTouch()
     renderCanvas()
 }
 function initCanvas() {
@@ -21,13 +23,13 @@ function initCanvas() {
     resizeCanvas()
     document.querySelector('.canvas-container').appendChild(gCanvas)
 }
-function setFill(fillColor) {
-    gCtx.fillStyle = fillColor
-}
+
 function onSetFill() {
     let fillColor = document.getElementById('palette').value
     document.querySelector('.icon.palette').style.fill = fillColor
+    gCtx.fillStyle = fillColor
     setTextFill(fillColor)
+    renderCanvas()
 }
 function resizeCanvas() {
     maxWidth = (document.body.clientWidth < 500) ? document.body.clientWidth - 20 : maxWidth
@@ -46,10 +48,10 @@ function renderCanvas() {
     drawMemeImg()
     gCtx.save()
     let texts = getTextsToRender()
-    if (texts.length === 0) {
-        activeLineShow()
-        return
-    }
+    // if (!texts.length) {
+    //     activeLineShow()
+    //     return
+    // }
     texts.map((text, i) => {
         gCtx.font = `${text.size}px ${text.font}`;
         gCtx.textAlign = text.align
@@ -60,14 +62,20 @@ function renderCanvas() {
 
         let measure = gCtx.measureText(text.line)
         setTextMeasure(measure.actualBoundingBoxAscent, measure.width, i)
-        handleOutOfBound(text, measure)
-
+        handleOutOfBound(text)
     })
+
+    let stickers = getStickersToRender()
+    stickers.map(sticker => {
+        gCtx.drawImage(sticker.img, sticker.posX, sticker.posY, sticker.img.width, sticker.img.height)
+    })
+
+
     activeLineShow()
     gCtx.restore()
 }
-function handleOutOfBound(text, measure) {
-    if (text.posX + measure.width > gCanvas.width && !gMouseisDown) setFontSize(-5)
+function handleOutOfBound(text) {
+    if (text.posX + text.width > gCanvas.width && !gMouseisDown) setFontSize(-5)
 }
 
 function onTextChange(elInput) {
@@ -90,13 +98,22 @@ function setDefaults() {
 
 function initTools() {
     const input = document.querySelector('.text-input')
-    input.value = getCurrText().line
-    activeLineShow()
+    let currTxt = getCurrText()
+    
+    if (!currTxt && !isSticksEmpty()) {
+        input.value = 'sticker selected'
+        input.disabled = true
+    } else if(isTxtsEmpty() && isSticksEmpty()){
+        input.value = 'Add new line'
+        input.disabled = true
+    }else{
+        input.disabled = false
+        input.value = currTxt.line
+        activeLineShow()
+    }
+
 }
 function activeLineShow() {
-    canvasRect = gCanvas.getBoundingClientRect();
-    canvasLeft = canvasRect.left;
-    canvasTop = canvasRect.top;
     const lineFocus = document.querySelector('.focus-line')
 
     let currText = getCurrText()
@@ -104,14 +121,24 @@ function activeLineShow() {
         lineFocus.classList.add('hidden')
         return
     } else lineFocus.classList.remove('hidden')
-    lineFocus.style.top = currText.posY - currText.height - 10 + canvasTop + 'px'
-    lineFocus.style.left = currText.posX + canvasLeft - 10 + 'px'
+
+    let { offsetX, offsetY } = calcPosOffset(currText.posX, currText.posY)
+    lineFocus.style.top = offsetY - currText.height - 10 + 'px'
+    lineFocus.style.left = offsetX - 10 + 'px'
     lineFocus.style.height = currText.height + 25 + 'px'
     lineFocus.style.width = currText.width + 30 + 'px'
 }
+function calcPosOffset(x, y) {
+    canvasRect = gCanvas.getBoundingClientRect();
+    canvasLeft = canvasRect.left;
+    canvasTop = canvasRect.top;
+    return { offsetX: x + canvasLeft, offsetY: y + canvasTop }
+}
 function onChangeFontSize(elSize) {
+    if(isTxtsEmpty() && isSticksEmpty()) return
     let dif = +elSize.dataset.val
-    setFontSize(dif)
+    if (getCurrText()) setFontSize(dif)
+    else setStickerSize(dif)
     renderCanvas()
 }
 
@@ -121,27 +148,27 @@ function onLineDelete() {
     initTools()
 }
 function onLineAdd() {
-    addNewLine()
+    addNewLine(gCtx.fillStyle)
     renderCanvas()
     initTools()
 }
-function handleClick() {
-    gCanvas.onclick = (event) => {
-        if (isInTextArea(event)) {
-            initTools()
-        }
-    }
-}
-function handleDrag() {
-    canvasRect = gCanvas.getBoundingClientRect();
-    canvasLeft = canvasRect.left;
-    canvasTop = canvasRect.top;
+function handleClick(){
     gCanvas.onmousedown = (ev) => {
-        if (isInTextArea(ev)) {
+        if (isInTextArea(ev) && getCurrText()) {
             gMouseisDown = true
+            initTools()
             gCanvas.onmousemove = event => {
                 if (gMouseisDown) {
                     dragText(event)
+                    renderCanvas()
+                }
+            }
+        } else if (isInStickerArea(ev)) {
+            gMouseisDown = true
+            initTools()
+            gCanvas.onmousemove = event => {
+                if (gMouseisDown) {
+                    dragSticker(event)
                     renderCanvas()
                 }
             }
@@ -150,10 +177,21 @@ function handleDrag() {
     gCanvas.onmouseup = ev => {
         if (gMouseisDown) {
             gMouseisDown = false
-            dragText(ev)
-            renderCanvas()
+            if (!getCurrText()) {
+                dragSticker(ev)
+                renderCanvas()
+            } else {
+                dragText(ev)
+                renderCanvas()
+            }
         }
     }
+}
+function handleTouch(){
+    canvasRect = gCanvas.getBoundingClientRect();
+    canvasLeft = canvasRect.left;
+    canvasTop = canvasRect.top;
+    
     gCanvas.addEventListener("touchstart", (ev) => {
         gCanvas.addEventListener("touchmove", event => {
             event.offsetX = event.touches[0].clientX - canvasLeft
@@ -163,12 +201,41 @@ function handleDrag() {
         });
     });
 }
+
+function dragStart(ev) {
+    ev.dataTransfer.setData("text", ev.target.src);
+}
+
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    sticker = new Image()
+    sticker.onload = () => {
+        let { height, width } = calcAspectRatio(sticker.width, sticker.height, MAX_STICKER_WIDTH, MAX_STICKER_HEIGHT)
+        sticker.width = width
+        sticker.height = height
+        addSticker(sticker, ev.offsetX, ev.offsetY)
+        renderCanvas()
+        initTools()
+    }
+    sticker.src = data
+}
+
 function downloadImg(elLink) {
     var imgContent = gCanvas.toDataURL('image/jpeg');
-    elLink.href = imgContent
+    elLink.parentElement.href = imgContent
+
 }
-function onSave() {
-    document.querySelector('.save').innerText = 'Saved!'
-    document.querySelector('.save').onclick = '#'
+function onSave(elSave) {
+    elSave.innerText = 'Saved in memes!'
+    elSave.onclick = '#'
     saveMeme();
+}
+function onToggleDropdown(elDrop) {
+    elDrop.querySelector('.select').classList.toggle('open')
+
 }
