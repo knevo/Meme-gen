@@ -65,19 +65,3 @@ function getImgUrlById(imgId) {
 function getMemesUrls() {
     return gMemeStorageUrls
 }
-function loadImageFromInput(ev) {
-    var reader = new FileReader();
-
-    reader.onload = function (event) {
-        var img = new Image();
-        img.onload = () => {
-            gImgs.push(createImg(img.src, []))
-            setCurrImgId(gImgs[gImgs.length - 1].id)
-            hideGallery() /// SERVICE IS TALKING WITH CONTROLLER NOT GOODD
-            showEditor() //// NO IDEA WHAT TO DO FORGIVE MEEEE
-            return true
-        };
-        img.src = event.target.result;
-    }
-    reader.readAsDataURL(ev.target.files[0]);
-}

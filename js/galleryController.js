@@ -41,15 +41,15 @@ function hideEditor() {
 function renderMemes() {
     let imgs = getMemesUrls()
     const elMeme = document.querySelector('.meme-page')
-    if (imgs[0]!==''){
+    if (imgs[0] !== '') {
         const htmls = imgs.map(img => {
             return `<img src="${img}">`
         })
         elMeme.innerHTML = htmls.join('')
-    }else{
+    } else {
         elMeme.innerHTML = `<div class="empty-container">Make some MEMES!!!</div>`
     }
-    
+
 }
 function toggleMenu() {
     document.body.classList.toggle('menu-open');
@@ -59,8 +59,20 @@ function toggleMenu() {
 }
 
 function onImgInput(ev) {
-    loadImageFromInput(ev)
-}
+    var reader = new FileReader();
 
+    reader.onload = function (event) {
+        var img = new Image();
+        img.onload = () => {
+            gImgs.push(createImg(img.src, []))
+            setCurrImgId(gImgs[gImgs.length - 1].id)
+            hideGallery()
+            showEditor()
+            return true
+        };
+        img.src = event.target.result;
+    }
+    reader.readAsDataURL(ev.target.files[0]);
+}
 
 

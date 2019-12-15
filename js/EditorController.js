@@ -4,14 +4,13 @@ const DEFAULT_FILL = 'white'
 const DEFAULT_STROKE = 'black'
 const MAX_STICKER_WIDTH = 150
 const MAX_STICKER_HEIGHT = 200
-let maxWidth = 500
+let maxImgWidth = 500
 let gCanvas, gCtx;
 let gMouseisDown = false;
 function initEditor() {
     initMeme()
     initCanvas()
     drawMemeImg()
-    renderCanvas()
     initTools()
     handleClick()
     handleTouch()
@@ -32,8 +31,8 @@ function onSetFill() {
     renderCanvas()
 }
 function resizeCanvas() {
-    maxWidth = (document.body.clientWidth < 500) ? document.body.clientWidth - 20 : maxWidth
-    let newRatio = calcAspectRatio(gMeme.img.width, gMeme.img.height, maxWidth, 500);
+    maxImgWidth = (document.body.clientWidth < 500) ? document.body.clientWidth - 20 : maxImgWidth
+    let newRatio = calcAspectRatio(gMeme.img.width, gMeme.img.height, maxImgWidth, 500);
     gMeme.img.width = newRatio.width
     gMeme.img.height = newRatio.height
     gCanvas.width = gMeme.img.width
@@ -48,10 +47,7 @@ function renderCanvas() {
     drawMemeImg()
     gCtx.save()
     let texts = getTextsToRender()
-    // if (!texts.length) {
-    //     activeLineShow()
-    //     return
-    // }
+
     texts.map((text, i) => {
         gCtx.font = `${text.size}px ${text.font}`;
         gCtx.textAlign = text.align
@@ -99,14 +95,14 @@ function setDefaults() {
 function initTools() {
     const input = document.querySelector('.text-input')
     let currTxt = getCurrText()
-    
+
     if (!currTxt && !isSticksEmpty()) {
         input.value = 'sticker selected'
         input.disabled = true
-    } else if(isTxtsEmpty() && isSticksEmpty()){
+    } else if (isTxtsEmpty() && isSticksEmpty()) {
         input.value = 'Add new line'
         input.disabled = true
-    }else{
+    } else {
         input.disabled = false
         input.value = currTxt.line
         activeLineShow()
@@ -115,33 +111,31 @@ function initTools() {
 }
 function activeLineShow() {
     const lineFocus = document.querySelector('.focus-line')
-
     let currText = getCurrText()
     if (!currText) {
         lineFocus.classList.add('hidden')
         return
     } else lineFocus.classList.remove('hidden')
 
-    let { offsetX, offsetY } = calcPosOffset(currText.posX, currText.posY)
+    let { offsetX, offsetY } = calcPosOffset(currText.posX, currText.posY, +1)
     lineFocus.style.top = offsetY - currText.height - 10 + 'px'
     lineFocus.style.left = offsetX - 10 + 'px'
     lineFocus.style.height = currText.height + 25 + 'px'
     lineFocus.style.width = currText.width + 30 + 'px'
 }
-function calcPosOffset(x, y) {
+function calcPosOffset(x, y, dir) {
     canvasRect = gCanvas.getBoundingClientRect();
     canvasLeft = canvasRect.left;
     canvasTop = canvasRect.top;
-    return { offsetX: x + canvasLeft, offsetY: y + canvasTop }
+    return { offsetX: x + canvasLeft * dir, offsetY: y + canvasTop * dir }
 }
 function onChangeFontSize(elSize) {
-    if(isTxtsEmpty() && isSticksEmpty()) return
+    if (isTxtsEmpty() && isSticksEmpty()) return
     let dif = +elSize.dataset.val
     if (getCurrText()) setFontSize(dif)
     else setStickerSize(dif)
     renderCanvas()
 }
-
 function onLineDelete() {
     deleteCurrLine()
     renderCanvas()
@@ -152,7 +146,7 @@ function onLineAdd() {
     renderCanvas()
     initTools()
 }
-function handleClick(){
+function handleClick() {
     gCanvas.onmousedown = (ev) => {
         if (isInTextArea(ev) && getCurrText()) {
             gMouseisDown = true
@@ -187,15 +181,12 @@ function handleClick(){
         }
     }
 }
-function handleTouch(){
-    canvasRect = gCanvas.getBoundingClientRect();
-    canvasLeft = canvasRect.left;
-    canvasTop = canvasRect.top;
-    
+function handleTouch() {
     gCanvas.addEventListener("touchstart", (ev) => {
         gCanvas.addEventListener("touchmove", event => {
-            event.offsetX = event.touches[0].clientX - canvasLeft
-            event.offsetY = event.touches[0].clientY - canvasTop
+            let { offsetX, offsetY } = calcPosOffset(event.touches[0].clientX, event.touches[0].clientY, -1)
+            event.offsetX = offsetX
+            event.offsetY = offsetY
             dragText(event)
             renderCanvas()
         });

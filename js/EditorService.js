@@ -87,12 +87,7 @@ function getCurrText() {
     }
     return gMeme.txts[gMeme.selectedTxtIdx]
 }
-function getCurrSticker(){
-    if(gMeme.selectedStickerIdx===-1){
-        return false
-    }
-    return gMeme.sticks[gMeme.selectedStickerIdx]
-}
+
 function setFontSize(dif) {
     gMeme.txts[gMeme.selectedTxtIdx].size += dif
 }
@@ -112,7 +107,6 @@ function deleteCurrLine() {
         if(gMeme.selectedStickerIdx>=gMeme.sticks.length) gMeme.selectedStickerIdx--
         if(isSticksEmpty()) gMeme.selectedTxtIdx = gMeme.txts.length-1
     }
-  
 }
 
 function addNewLine(fillColor) {
