@@ -5,22 +5,41 @@ const DEFAULT_STROKE = 'black'
 const MAX_STICKER_WIDTH = 150
 const MAX_STICKER_HEIGHT = 200
 let maxImgWidth = 500
+let gElImg;
 let gCanvas, gCtx;
 let gMouseisDown = false;
+
 function initEditor() {
     initMeme()
+    
+    gElImg = initMemeImg()
     initCanvas()
     drawMemeImg()
-    initTools()
+    renderTools()
     handleClick()
     handleTouch()
+    handleStickerDrag()
     renderCanvas()
 }
+
 function initCanvas() {
     gCanvas = document.createElement('canvas')
     gCtx = gCanvas.getContext('2d')
     resizeCanvas()
     document.querySelector('.canvas-container').appendChild(gCanvas)
+}
+function initMemeImg() {
+    let img = new Image()
+    img.onload = () => {
+        gMeme.elements[0].posX = gElImg.width * 0.1
+        gMeme.elements[0].posY = gElImg.height * 0.2
+        gMeme.elements[1].posX = gElImg.width * 0.1
+        gMeme.elements[1].posY = gElImg.height * 0.8
+        renderCanvas()
+    }
+    img.src = getImgUrlById(getCurrImgId())
+    setMemeImgSrc(img.src)
+    return img
 }
 
 function onSetFill() {
@@ -30,46 +49,48 @@ function onSetFill() {
     setTextFill(fillColor)
     renderCanvas()
 }
+
 function resizeCanvas() {
     maxImgWidth = (document.body.clientWidth < 500) ? document.body.clientWidth - 20 : maxImgWidth
-    let newRatio = calcAspectRatio(gMeme.img.width, gMeme.img.height, maxImgWidth, 500);
-    gMeme.img.width = newRatio.width
-    gMeme.img.height = newRatio.height
-    gCanvas.width = gMeme.img.width
-    gCanvas.height = gMeme.img.height
+    let newRatio = calcAspectRatio(gElImg.width, gElImg.height, maxImgWidth, 500);
+    gElImg.width = newRatio.width
+    gElImg.height = newRatio.height
+    gCanvas.width = gElImg.width
+    gCanvas.height = gElImg.height
     setDefaults()
 }
 
 function drawMemeImg() {
-    gCtx.drawImage(getMemeImg(), 0, 0, gCanvas.width, gCanvas.height)
+    gCtx.drawImage(gElImg, 0, 0, gCanvas.width, gCanvas.height)
 }
-function renderCanvas() {
-    drawMemeImg()
+
+function renderCanvas(isDownload=false) {
     gCtx.save()
-    let texts = getTextsToRender()
+    drawMemeImg()
+    let elements = getElementsToRender()
 
-    texts.map((text, i) => {
-        gCtx.font = `${text.size}px ${text.font}`;
-        gCtx.textAlign = text.align
-        gCtx.fillStyle = text.fill
-        gCtx.strokeStyle = text.stroke
-        gCtx.strokeText(text.line, text.posX, text.posY);
-        gCtx.fillText(text.line, text.posX, text.posY);
+    elements.forEach((element, i) => {
+        if (!element.img) {
+            gCtx.font = `${element.size}px ${element.font}`;
+            let measure = gCtx.measureText(element.line)
+            setTextMeasure(measure.actualBoundingBoxAscent, measure.width, i)
+        }
 
-        let measure = gCtx.measureText(text.line)
-        setTextMeasure(measure.actualBoundingBoxAscent, measure.width, i)
-        handleOutOfBound(text)
+        if (getCurrElement() === element && !isDownload) markElement()
+
+        if (!element.img) {
+            gCtx.fillStyle = element.fill
+            gCtx.strokeStyle = element.stroke
+            handleOutOfBound(element)
+            gCtx.strokeText(element.line, element.posX, element.posY);
+            gCtx.fillText(element.line, element.posX, element.posY);
+
+
+        } else gCtx.drawImage(element.img, element.posX, element.posY, element.width, element.height)
     })
-
-    let stickers = getStickersToRender()
-    stickers.map(sticker => {
-        gCtx.drawImage(sticker.img, sticker.posX, sticker.posY, sticker.img.width, sticker.img.height)
-    })
-
-
-    activeLineShow()
     gCtx.restore()
 }
+
 function handleOutOfBound(text) {
     if (text.posX + text.width > gCanvas.width && !gMouseisDown) setFontSize(-5)
 }
@@ -92,105 +113,105 @@ function setDefaults() {
     gCtx.shadowColor = "black";
 }
 
-function initTools() {
+function renderTools() {
     const input = document.querySelector('.text-input')
-    let currTxt = getCurrText()
+    let currElement = getCurrElement()
 
-    if (!currTxt && !isSticksEmpty()) {
+    if (currElement.img) {
         input.value = 'sticker selected'
         input.disabled = true
-    } else if (isTxtsEmpty() && isSticksEmpty()) {
+    } else if (!currElement) {
         input.value = 'Add new line'
         input.disabled = true
     } else {
         input.disabled = false
-        input.value = currTxt.line
-        activeLineShow()
+        input.value = currElement.line
     }
-
 }
-function activeLineShow() {
-    const lineFocus = document.querySelector('.focus-line')
-    let currText = getCurrText()
-    if (!currText) {
-        lineFocus.classList.add('hidden')
-        return
-    } else lineFocus.classList.remove('hidden')
 
-    let { offsetX, offsetY } = calcPosOffset(currText.posX, currText.posY, +1)
-    lineFocus.style.top = offsetY - currText.height - 10 + 'px'
-    lineFocus.style.left = offsetX - 10 + 'px'
-    lineFocus.style.height = currText.height + 25 + 'px'
-    lineFocus.style.width = currText.width + 30 + 'px'
+function markElement() {
+    gCtx.save()
+    let currText = getCurrElement()
+    gCtx.beginPath()
+    gCtx.fillStyle = 'rgba(36, 35, 35, 0.34)';
+    gCtx.lineWidth = 3
+    gCtx.rect(currText.posX - 10, currText.posY + ((currText.img) ? 0 : (- currText.height - 10)), currText.width + 20, currText.height + 25);
+    gCtx.stroke()
+    gCtx.fill()
+    gCtx.restore()
 }
+
 function calcPosOffset(x, y, dir) {
     canvasRect = gCanvas.getBoundingClientRect();
     canvasLeft = canvasRect.left;
     canvasTop = canvasRect.top;
     return { offsetX: x + canvasLeft * dir, offsetY: y + canvasTop * dir }
 }
+
 function onChangeFontSize(elSize) {
-    if (isTxtsEmpty() && isSticksEmpty()) return
+    if (!getCurrElement()) return
     let dif = +elSize.dataset.val
-    if (getCurrText()) setFontSize(dif)
+    if (!getCurrElement().img) setFontSize(dif)
     else setStickerSize(dif)
     renderCanvas()
 }
+
 function onLineDelete() {
     deleteCurrLine()
     renderCanvas()
-    initTools()
+    renderTools()
 }
+
 function onLineAdd() {
     addNewLine(gCtx.fillStyle)
     renderCanvas()
-    initTools()
+    renderTools()
 }
+
+function onForward() {
+    bringToFront()
+    renderCanvas()
+}
+
 function handleClick() {
     gCanvas.onmousedown = (ev) => {
-        if (isInTextArea(ev) && getCurrText()) {
+        if (selectAndCheckIfElement(ev.offsetX, ev.offsetY)) {
             gMouseisDown = true
-            initTools()
-            gCanvas.onmousemove = event => {
-                if (gMouseisDown) {
-                    dragText(event)
-                    renderCanvas()
-                }
-            }
-        } else if (isInStickerArea(ev)) {
-            gMouseisDown = true
-            initTools()
-            gCanvas.onmousemove = event => {
-                if (gMouseisDown) {
-                    dragSticker(event)
-                    renderCanvas()
-                }
-            }
+            renderTools()
+            renderCanvas()
         }
     }
-    gCanvas.onmouseup = ev => {
+
+    gCanvas.onmousemove = event => {
+        if (gMouseisDown) {
+            dragElement(event.offsetX, event.offsetY)
+            renderCanvas()
+        }
+    }
+
+    document.onmouseup = ev => {
         if (gMouseisDown) {
             gMouseisDown = false
-            if (!getCurrText()) {
-                dragSticker(ev)
-                renderCanvas()
-            } else {
-                dragText(ev)
-                renderCanvas()
-            }
         }
     }
 }
 function handleTouch() {
     gCanvas.addEventListener("touchstart", (ev) => {
-        gCanvas.addEventListener("touchmove", event => {
-            let { offsetX, offsetY } = calcPosOffset(event.touches[0].clientX, event.touches[0].clientY, -1)
-            event.offsetX = offsetX
-            event.offsetY = offsetY
-            dragText(event)
-            renderCanvas()
-        });
+        let { offsetX, offsetY } = calcPosOffset(ev.touches[0].clientX, ev.touches[0].clientY, -1)
+        if (selectAndCheckIfElement(offsetX, offsetY)) {
+        gMouseisDown = true
+        }
     });
+    gCanvas.addEventListener("touchmove", event => {
+        if(gMouseisDown){
+            let { offsetX, offsetY } = calcPosOffset(event.touches[0].clientX, event.touches[0].clientY, -1)
+            dragElement(offsetX,offsetY)
+            renderCanvas()
+        }
+    });
+    gCanvas.addEventListener('touchend',()=>{
+        gMouseisDown = false
+    })
 }
 
 function dragStart(ev) {
@@ -209,14 +230,31 @@ function drop(ev) {
         let { height, width } = calcAspectRatio(sticker.width, sticker.height, MAX_STICKER_WIDTH, MAX_STICKER_HEIGHT)
         sticker.width = width
         sticker.height = height
-        addSticker(sticker, ev.offsetX, ev.offsetY)
+        addSticker(sticker, ev.offsetX, ev.offsetY, width, height)
         renderCanvas()
-        initTools()
+        renderTools()
     }
     sticker.src = data
 }
-
+function handleStickerDrag(){
+    let stickers = document.querySelectorAll('img[draggable]')
+    stickers.forEach(sticker=>{
+        sticker.addEventListener('touchstart',(event)=>{
+            stickerImg = new Image()
+            stickerImg.onload = () => {
+                let { height, width } = calcAspectRatio(stickerImg.width, stickerImg.height, MAX_STICKER_WIDTH/2, MAX_STICKER_HEIGHT/2)
+                stickerImg.width = width
+                stickerImg.height = height
+                addSticker(stickerImg, gCanvas.width/2, gCanvas.height/2, width, height)
+                renderCanvas()
+                renderTools()
+            }
+            stickerImg.src = event.target.src
+        })
+    })
+}
 function downloadImg(elLink) {
+    renderCanvas(true)
     var imgContent = gCanvas.toDataURL('image/jpeg');
     elLink.parentElement.href = imgContent
 
@@ -224,9 +262,9 @@ function downloadImg(elLink) {
 function onSave(elSave) {
     elSave.innerText = 'Saved in memes!'
     elSave.onclick = '#'
-    saveMeme();
+    renderCanvas(true)
+    saveMeme(gCanvas.toDataURL('image/jpeg'));
 }
 function onToggleDropdown(elDrop) {
     elDrop.querySelector('.select').classList.toggle('open')
-
 }

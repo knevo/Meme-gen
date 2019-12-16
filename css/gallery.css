@@ -14,7 +14,7 @@ span {
     column-gap: 15px;
 }
 
-.gallery-container img {
+.gallery-container > img {
     display: block;
     object-fit: cover;
     transition: all .2s ease-in-out;
@@ -24,7 +24,7 @@ span {
     object-fit: cover;
 }
 
-.gallery-container>img:hover {
+.gallery-container img:hover {
     transform: scale(1.1);
     z-index: 100;
 }

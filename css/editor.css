@@ -66,12 +66,6 @@
     justify-self: center;
 }
 
-.focus-line {
-    position: absolute;
-    background-color: rgba(36, 35, 35, 0.34);
-    pointer-events: none;
-}
-
 .output>*:not(:first-child) {
     margin-inline-start: 15px;
 }
